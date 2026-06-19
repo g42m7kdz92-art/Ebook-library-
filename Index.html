@@ -1,28 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My File Library</title>
+    <title>My PDF Library</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <h1>📚 My Study File Library</h1>
+    <h1>📚 My Course Notes</h1>
 
-    <div class="container">
+    <input type="file" id="fileInput">
+    <button onclick="uploadFile()">Upload Note</button>
 
-        <h2>Available Files</h2>
-
-        <a href="files/CSC322.docx" download>Download CSC 322 Notes (Word)</a><br><br>
-
-        <a href="files/notes.js" download>Download JavaScript File</a><br><br>
-
-        <a href="files/style.css" download>Download CSS File</a><br><br>
-
-        <a href="files/guide.pdf" download>Download PDF Guide</a>
-
-    </div>
+    <h2>Available Notes</h2>
+    <div id="fileList"></div>
 
     <script src="script.js"></script>
-
 </body>
 </html>
