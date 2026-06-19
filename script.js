@@ -1,40 +1,60 @@
-let files = JSON.parse(localStorage.getItem("files")) || [];
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getStorage, ref, uploadBytes, listAll, getDownloadURL } 
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-storage.js";
 
-// Upload file (stored in browser only)
-function uploadFile() {
-    let input = document.getElementById("fileInput");
+// 🔥 Firebase config (YOU MUST REPLACE THIS WITH YOUR OWN)
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "XXXX",
+  appId: "XXXX"
+};
 
-    if (input.files.length === 0) {
+const app = initializeApp(firebaseConfig);
+const storage = getStorage(app);
+
+// Upload file permanently
+window.uploadFile = async function () {
+    const file = document.getElementById("fileInput").files[0];
+
+    if (!file) {
         alert("Select a file first!");
         return;
     }
 
-    let file = input.files[0];
+    const storageRef = ref(storage, file.name);
 
-    let reader = new FileReader();
+    await uploadBytes(storageRef, file);
 
-    reader.onload = function(e) {
-        let fileData = {
-            name: file.name,
-            data: e.target.result
-        };
+    alert("Uploaded successfully!");
 
-        files.push(fileData);
-        localStorage.setItem("files", JSON.stringify(files));
+    loadFiles();
+};
 
-        displayFiles();
-    };
+// Load files from Firebase
+async function loadFiles() {
+    const listRef = ref(storage, "/");
 
-    reader.readAsDataURL(file);
-}
+    const res = await listAll(listRef);
 
-// Display files
-function displayFiles() {
-    let container = document.getElementById("fileList");
+    const container = document.getElementById("fileList");
     container.innerHTML = "";
 
-    files.forEach((file, index) => {
-        let div = document.createElement("div");
+    res.items.forEach(async (itemRef) => {
+        const url = await getDownloadURL(itemRef);
+
+        const div = document.createElement("div");
         div.className = "file";
 
-       
+        div.innerHTML = `
+            <p>${itemRef.name}</p>
+            <a href="${url}" target="_blank">Download</a>
+        `;
+
+        container.appendChild(div);
+    });
+}
+
+loadFiles();
